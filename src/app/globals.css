@@ -1,26 +1,60 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Basic CSS reset for the page */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #ffffff; /* White background */
+}
+
+/*
+  This is the main flex container.
+  - It centers the entire layout on the page.
+  - `align-items: flex-end` aligns the human column and the content area along their bottoms.
+*/
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 100vh;
+  gap: 1rem; /* Creates space between the human column and the main content */
+}
+
+/*
+  Container for the vertical column of human icons.
+  - `flex-direction: column` stacks the images vertically.
+*/
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Space between each human icon */
+}
+
+/* Container for the main image and the DNA row below it */
+.content-area {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Container for the horizontal row of DNA icons */
+.bottom-row {
+  display: flex;
+}
+
+/* --- Image Specific Styles --- */
+
+/* The main red square image */
+.main-image {
+  width: 500px;
+  height: 500px;
+  border: 2px solid #00bfff; /* Light blue border */
+}
+
+/* The human icons on the left */
+.human-icon {
+  width: 40px;
+}
+
+/* The DNA icons on the bottom */
+.dna-icon {
+  width: 500px;
 }

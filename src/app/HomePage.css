@@ -1,0 +1,150 @@
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding: 2rem;
+    font-family: 'Merriweather', serif;
+  }
+  
+  .title-container {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .title-container h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0;
+  }
+  
+  .title-container p {
+    font-size: 1.25rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+  }
+  
+  .nav-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  .nav-button {
+    display: block;
+    width: 100%;
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    text-align: center;
+    text-decoration: none;
+    color: #212529;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .nav-button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  }
+  
+  .tutorial-button {
+    background-color: #d1f1ff; /* Light blue */
+    border: 1px solid #a6e3ff;
+  }
+  
+  .play-button {
+    background-color: #ffe4e8; /* Light pink */
+    border: 1px solid #ffc2cc;
+  }
+  
+  .button-title {
+    font-size: 2.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .button-subtitle {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #4a5568;
+  }
+  
+  /* --- NEW: Cumulative Stats Section --- */
+  .stats-container {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 3rem;
+    padding: 2rem;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .stats-title {
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #343a40;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .stats-summary {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #495057;
+    margin-bottom: 1.5rem;
+  }
+  
+  .stats-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+  }
+  
+  .stats-matrix th,
+  .stats-matrix td {
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+  
+  .stats-matrix th {
+    background-color: #f8f9fa;
+    font-weight: 700;
+  }
+  
+  .stats-matrix td:first-child,
+  .stats-matrix th:first-child {
+    font-weight: 700;
+    background-color: #f8f9fa;
+  }
+  
+  .reset-button {
+    display: block;
+    margin: 2rem auto 0 auto;
+    padding: 0.6rem 1.2rem;
+    font-family: 'Merriweather', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #dc3545;
+    background-color: transparent;
+    border: 1px solid #dc3545;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .reset-button:hover {
+    background-color: #f8d7da;
+    color: #842029;
+  }
+  
