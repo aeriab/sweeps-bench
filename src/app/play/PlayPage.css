@@ -1,87 +1,96 @@
+/* --- General Quiz Layout --- */
 .quiz-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Align content to the top */
     min-height: 100vh;
-    background-color: #f8f9fa; /* Slightly off-white for an academic feel */
-    padding: 1rem;
-    /* The font is inherited from layout.tsx, but we can set it here as a fallback */
+    padding: 2rem 1rem 8rem 1rem; /* Add bottom padding for footer */
+    background-color: #f8f9fa;
     font-family: 'Merriweather', serif;
   }
   
   .quiz-header {
+    width: 100%;
+    max-width: 600px;
     text-align: center;
     margin-bottom: 1.5rem;
-    color: #212529; /* Darker text for better contrast */
   }
   
   .quiz-header h1 {
-    margin: 0;
     font-size: 2rem;
     font-weight: 700;
+    color: #333;
+    margin: 0;
   }
   
   .quiz-header h2 {
-    margin: 0.5rem 0 0 0;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 400;
-    color: #495057;
+    color: #555;
+    margin: 0.5rem 0 0;
   }
   
+  /* --- Image Styling --- */
   .image-wrapper {
     width: 100%;
-    /* Set max-width and height to be equal for a perfect square */
-    max-width: 450px;
-    height: 450px;
-    background-color: #f8f9fa; /* Match background so it disappears */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    margin-bottom: 1rem;
+    max-width: 500px;
+    margin-bottom: 1.5rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
   }
   
   .sweep-image {
+    display: block;
     width: 100%;
-    height: 100%;
-    object-fit: contain;
+    height: auto;
   }
   
   .image-placeholder {
-    color: #adb5bd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 500px;
+    background-color: #e9ecef;
+    color: #6c757d;
   }
   
+  /* --- Feedback & Controls --- */
   .feedback-container {
-    height: 40px;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
   }
   
   .feedback-message {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
   }
   
   .controls-container {
     display: flex;
+    justify-content: center;
     gap: 1rem;
+    width: 100%;
+    max-width: 600px;
   }
   
   .answer-button {
-    padding: 0.8rem 2rem;
+    padding: 0.75rem 1.5rem;
     font-size: 1.2rem;
+    font-family: 'Merriweather', serif;
     font-weight: 700;
-    font-family: 'Merriweather', serif; /* Ensure font consistency */
-    color: #212529; /* Dark text for readability on light buttons */
-    border: 1px solid #ced4da; /* Subtle border */
+    border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    width: 120px;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
   
   .answer-button:disabled {
@@ -91,140 +100,125 @@
   
   .answer-button:not(:disabled):hover {
     transform: translateY(-2px);
-    border-color: #adb5bd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   }
   
-  .neutral-btn {
-    background-color: #e9ecef; /* Light Grey */
-  }
+  .hard-btn { background-color: #f8d7da; }
+  .soft-btn { background-color: #cce5ff; }
+  .neutral-btn { background-color: #e2e3e5; }
   
-  .soft-btn {
-    background-color: #d1e7ff; /* Light Blue */
-  }
   
-  .hard-btn {
-    background-color: #f8d7da; /* Light Red */
-  }
-  
-  /* Results Card Styling */
-  .results-card {
-    background-color: #ffffff;
-    padding: 2rem 3rem 3rem 3rem;
-    border-radius: 12px;
-    text-align: center;
-    border: 1px solid #dee2e6;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
-    color: #212529;
+  /* --- Fixed Footer --- */
+  .quiz-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
     width: 100%;
-    max-width: 550px;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: #ffffff;
+    border-top: 1px solid #dee2e6;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+    z-index: 100;
   }
   
-  .results-title {
-    font-size: 2.5rem;
+  .footer-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-family: 'Merriweather', serif;
     font-weight: 700;
-    margin-top: 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+  }
+  .footer-button:hover {
+    background-color: #e2e6ea;
+  }
+  
+  
+  /* --- Sliding Stats Panel --- */
+  .stats-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    background-color: #fff;
+    border-top: 2px solid #007bff;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 110;
+    padding: 1.5rem;
+    padding-bottom: 2rem;
+  }
+  
+  .stats-panel.open {
+    transform: translateY(0);
+  }
+  
+  .stats-panel-content {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .stats-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #212529;
+  }
+  
+  .stats-summary {
+    font-size: 1.1rem;
     margin-bottom: 1.5rem;
-  }
-  
-  .results-score {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .results-score span {
-    font-weight: 700;
-    font-size: 2rem;
-    color: #000;
-    display: block;
-    margin-top: 0.5rem;
-  }
-  
-  .results-accuracy {
-    font-size: 1.2rem;
     color: #495057;
   }
   
-  .home-button {
-    display: inline-block;
-    margin-top: 2rem;
-    padding: 0.8rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #fff;
-    background-color: #0d6efd;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-  
-  .home-button:hover {
-    background-color: #0b5ed7;
-    transform: translateY(-2px);
-  }
-  
-  /* --- NEW STYLES for Results Tabs and Confusion Matrix --- */
-  
-  .results-tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid #dee2e6;
-  }
-  
-  .tab-button {
-    font-family: 'Merriweather', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    color: #6c757d;
-    position: relative;
-    bottom: -2px;
-    border-bottom: 2px solid transparent;
-  }
-  
-  .tab-button.active {
-    color: #0d6efd;
-    border-bottom-color: #0d6efd;
-  }
-  
-  .results-content {
-    min-height: 150px; /* Ensure consistent height between tabs */
-  }
-  
-  .matrix-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: #495057;
-  }
-  
-  .confusion-matrix {
+  .stats-matrix {
     width: 100%;
     border-collapse: collapse;
-    margin: 0 auto;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
   }
   
-  .confusion-matrix th,
-  .confusion-matrix td {
+  .stats-matrix th, .stats-matrix td {
     border: 1px solid #dee2e6;
     padding: 0.75rem;
     text-align: center;
+    min-width: 60px;
+  }
+  
+  .stats-matrix th {
+    background-color: #f8f9fa;
+    font-weight: 700;
+  }
+  
+  .stats-matrix td {
+      transition: background-color 0.3s ease;
+  }
+  
+  .close-stats-button {
+    padding: 0.75rem 1.5rem;
     font-size: 1.1rem;
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
   }
   
-  .confusion-matrix th {
-    background-color: #f8f9fa;
-    font-weight: 700;
-  }
-  
-  .confusion-matrix td:first-child,
-  .confusion-matrix th:first-child {
-    font-weight: 700;
-    background-color: #f8f9fa;
+  .close-stats-button:hover {
+    background-color: #0056b3;
   }
   
   
