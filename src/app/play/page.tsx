@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react'; // Import useRef
 import Link from 'next/link';
 import Image from 'next/image';
 import './PlayPage.css';
@@ -32,18 +32,21 @@ export default function PlayPage() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [quizEnded, setQuizEnded] = useState(false);
   
-  const [sessionMatrix, setSessionMatrix] = useState<ConfusionMatrix>(initialMatrix);
+  const [sessionMatrix, setSessionMatrix] = useState<ConfusionMatrix>(JSON.parse(JSON.stringify(initialMatrix)));
   const [showExtraStats, setShowExtraStats] = useState(false);
+  
+  // --- BUG FIX: Add a ref to track if stats have been saved ---
+  const hasSavedStats = useRef(false);
 
-  // --- NEW: useEffect to save stats when quiz ends ---
   useEffect(() => {
-    if (quizEnded) {
+    // --- BUG FIX: Check if the quiz has ended AND if we haven't already saved the stats ---
+    if (quizEnded && !hasSavedStats.current) {
       // 1. Get existing stats from localStorage
       const savedStatsRaw = localStorage.getItem('haplotypeQuizStats');
       let stats = {
         totalCorrect: 0,
         totalAttempted: 0,
-        cumulativeMatrix: initialMatrix,
+        cumulativeMatrix: JSON.parse(JSON.stringify(initialMatrix)),
       };
 
       if (savedStatsRaw) {
@@ -66,6 +69,9 @@ export default function PlayPage() {
       
       // 3. Save the updated stats back to localStorage
       localStorage.setItem('haplotypeQuizStats', JSON.stringify(stats));
+      
+      // --- BUG FIX: Set the ref to true so this code block never runs again for this session ---
+      hasSavedStats.current = true;
     }
   }, [quizEnded, score, sessionMatrix]);
 

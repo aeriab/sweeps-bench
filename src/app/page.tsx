@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import './HomePage.css';
 
@@ -14,29 +14,73 @@ interface CumulativeStats {
   cumulativeMatrix: ConfusionMatrix;
 }
 
+// Define a constant for the zeroed-out stats structure
+const ZEROED_STATS: CumulativeStats = {
+  totalCorrect: 0,
+  totalAttempted: 0,
+  cumulativeMatrix: {
+    Neutral: { Neutral: 0, Soft: 0, Hard: 0 },
+    Soft: { Neutral: 0, Soft: 0, Hard: 0 },
+    Hard: { Neutral: 0, Soft: 0, Hard: 0 },
+  },
+};
+
 export default function HomePage() {
   const [stats, setStats] = useState<CumulativeStats | null>(null);
 
-  // Load stats from localStorage when the component mounts
+  // Load stats from localStorage or initialize with zeros
   useEffect(() => {
     try {
       const savedStats = localStorage.getItem('haplotypeQuizStats');
       if (savedStats) {
         setStats(JSON.parse(savedStats));
+      } else {
+        setStats(ZEROED_STATS);
       }
     } catch (error) {
       console.error("Failed to parse stats from localStorage", error);
+      setStats(ZEROED_STATS);
     }
   }, []);
 
   const handleResetStats = () => {
-    localStorage.removeItem('haplotypeQuizStats');
-    setStats(null);
+    localStorage.setItem('haplotypeQuizStats', JSON.stringify(ZEROED_STATS));
+    setStats(ZEROED_STATS);
   };
 
   const calculateAccuracy = () => {
     if (!stats || stats.totalAttempted === 0) return '0.0';
     return ((stats.totalCorrect / stats.totalAttempted) * 100).toFixed(1);
+  };
+
+  // --- MODIFIED: Calculate matrix-wide maximum value for heatmap scaling ---
+  const matrixMax = useMemo(() => {
+    if (!stats) return 0;
+    
+    // Flatten all values from the matrix into a single array and find the max
+    const allValues = CATEGORIES.flatMap(guessCat => 
+        CATEGORIES.map(actualCat => stats.cumulativeMatrix[guessCat][actualCat])
+    );
+
+    return Math.max(...allValues);
+  }, [stats]);
+  
+  // --- MODIFIED: Function to get the dynamic style for each cell based on matrix-wide max ---
+  const getCellStyle = (guessCat: Category, actualCat: Category) => {
+    if (!stats) return {};
+    
+    const value = stats.cumulativeMatrix[guessCat][actualCat];
+    
+    if (matrixMax === 0 || value === 0) {
+      return {}; // No background for zero values
+    }
+
+    const proportion = value / matrixMax;
+    // Base color: a scientific-looking blue. RGBA allows for transparency.
+    return {
+      backgroundColor: `rgba(40, 116, 166, ${proportion})`,
+      color: proportion > 0.5 ? 'white' : 'inherit', // Make text readable on dark backgrounds
+    };
   };
 
   return (
@@ -61,8 +105,7 @@ export default function HomePage() {
         <div className="stats-container">
           <h2 className="stats-title">Your Cumulative Statistics</h2>
           <p className="stats-summary">
-            Overall Accuracy: <strong>{calculateAccuracy()}%</strong> 
-            ({stats.totalCorrect} / {stats.totalAttempted} correct)
+            Overall Accuracy: <strong>{calculateAccuracy()}%</strong> ({stats.totalCorrect} / {stats.totalAttempted} correct)
           </p>
           <table className="stats-matrix">
             <thead>
@@ -80,7 +123,10 @@ export default function HomePage() {
                 <tr key={guessCat}>
                   <td>{guessCat}</td>
                   {CATEGORIES.map(actualCat => (
-                    <td key={`${guessCat}-${actualCat}`}>
+                    <td 
+                      key={`${guessCat}-${actualCat}`}
+                      style={getCellStyle(guessCat, actualCat)}
+                    >
                       {stats.cumulativeMatrix[guessCat][actualCat]}
                     </td>
                   ))}
@@ -96,3 +142,4 @@ export default function HomePage() {
     </main>
   );
 }
+
