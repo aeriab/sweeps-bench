@@ -1,10 +1,17 @@
+/* Apply to the whole page to remove default spacing and scrolling */
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+
 /* --- General Quiz Layout --- */
 .quiz-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start; /* Align content to the top */
-    min-height: 100vh;
+    height: 100vh;
     padding: 2rem 1rem 8rem 1rem; /* Add bottom padding for footer */
     background-color: #f8f9fa;
     font-family: 'Merriweather', serif;
@@ -34,7 +41,7 @@
   /* --- Image Styling --- */
   .image-wrapper {
     width: 100%;
-    max-width: 500px;
+    max-width: 700px;
     margin-bottom: 1.5rem;
     background-color: #fff;
     border: 1px solid #dee2e6;
@@ -42,6 +49,7 @@
   }
   
   .sweep-image {
+    image-rendering: pixelated;
     display: block;
     width: 100%;
     height: auto;
@@ -106,16 +114,60 @@
   .hard-btn { background-color: #f8d7da; }
   .soft-btn { background-color: #cce5ff; }
   .neutral-btn { background-color: #e2e3e5; }
+
+  /* Container for Back/Next/Return buttons */
+  .navigation-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    /* Reserve space to prevent layout from jumping when the button appears */
+    height: 48px;
+  }
+
+  .nav-button {
+    padding: 0.6rem 1.5rem;
+    font-size: 1.1rem;
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  /* Specific style for the less-obtrusive Back button */
+  .back-button {
+    background-color: transparent;
+    border: 1px solid #6c757d;
+    color: #6c757d;
+  }
+
+  .back-button:hover {
+    background-color: #f8f9fa;
+  }
+
+  /* Style for the label shown in review mode */
+  .correct-answer-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: #333;
+    width: 100%;
+    /* Match the height of the answer buttons to keep layout consistent */
+    height: 58px;
+  }
+
+
   
-  
-  /* --- Fixed Footer --- */
   .quiz-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 20px;
     padding: 1rem;
     background-color: #ffffff;
     border-top: 1px solid #dee2e6;
