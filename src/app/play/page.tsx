@@ -137,7 +137,7 @@ export default function PlayPage() {
     return (
       <div className="quiz-container">
         <div className="quiz-header">
-          <h1>Reviewing Question {questionNumber - 1}</h1>
+          <h1>Reviewing Question {cumulativeStats.totalAttempted}</h1>
         </div>
         <div className="image-wrapper">
           <Image
@@ -147,7 +147,7 @@ export default function PlayPage() {
           />
         </div>
         <div className="correct-answer-label">
-          Correct Answer: <strong>{previousQuestion.answer}</strong>
+          Correct Answer: {'\u00A0'} <strong>{previousQuestion.answer}</strong>
         </div>
         <div className="navigation-container">
           <button onClick={handleReturnToQuiz} className="nav-button">
@@ -162,7 +162,7 @@ export default function PlayPage() {
   return (
     <div className="quiz-container">
       <div className="quiz-header">
-        <h1>Question {questionNumber}</h1>
+        <h1>Question {cumulativeStats.totalAttempted + 1 - (isAnswered ? 1 : 0)}</h1>
         <h2>Accuracy: {cumulativeStats.totalAttempted > 0 ? ((cumulativeStats.totalCorrect / cumulativeStats.totalAttempted) * 100).toFixed(1) + '%' : 'N/A'}</h2>
       </div>
 
@@ -189,7 +189,11 @@ export default function PlayPage() {
       {/* NEW: The "Back" button, which is always available after the first question */}
       <div className="navigation-container">
         {previousQuestion.image && (
-          <button onClick={handleGoBack} className="nav-button back-button">
+          <button
+            onClick={handleGoBack}
+            className="nav-button back-button"
+            disabled={isAnswered}
+          >
             Back
           </button>
         )}
