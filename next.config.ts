@@ -5,9 +5,9 @@ const isProd = process.env.NODE_ENV === 'production';
 const nextConfig: NextConfig = {
   output: 'export',
 
-  basePath: isProd ? '/sweeps-human-benchmark' : '',
+  basePath: isProd ? '/sweeps-bench' : '',
   
-  assetPrefix: isProd ? '/sweeps-human-benchmark/' : '',
+  assetPrefix: isProd ? '/sweeps-bench/' : '',
 
   images: {
     unoptimized: true,
