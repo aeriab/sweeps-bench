@@ -184,7 +184,7 @@ export default function TutorialPage() {
 
         <h2 className="sectionTitle">Your Mission</h2>
         <p>
-          The Garud Lab at UCLA uses AI to find these patterns, but to know if our models are accurate, we need your help. By playing, you are creating a vital human benchmark for science.
+          The Garud Lab at UCLA uses AI to find these patterns, but to know if our models are performing well, we need your help. By playing, you are creating a vital human benchmark for science.
         </p>
 
         <Link href="/" className="homeLink">
