@@ -1,0 +1,53 @@
+# Name of the workflow
+name: Deploy Next.js to GitHub Pages
+
+# Run this workflow on pushes to the main branch
+on:
+  push:
+    branches:
+      - main
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Allow one concurrent deployment, and cancel any in-progress runs
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        # Checks out your repository's code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        # Sets up the Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Or your preferred Node.js version
+          cache: 'npm'
+
+      - name: Install Dependencies
+        # Installs your project's npm dependencies
+        run: npm install
+
+      - name: Build Project
+        # Runs the build script defined in your package.json
+        run: npm run build
+
+      - name: Setup Pages
+        # Configures GitHub Pages for deployment
+        uses: actions/configure-pages@v4
+
+      - name: Upload Artifact
+        # Uploads the build output (the 'out' folder)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './out'
+
+      - name: Deploy to GitHub Pages
+        # Deploys the artifact to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
