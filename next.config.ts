@@ -1,17 +1,13 @@
-import type { NextConfig } from 'next';
+// In next.config.js
 
-const isProd = process.env.NODE_ENV === 'production';
+import { basePath, assetPrefix } from './config';
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   output: 'export',
-
-  basePath: isProd ? '/sweeps-bench' : '',
-  
-  assetPrefix: isProd ? '/sweeps-bench/' : '',
-
+  basePath: basePath,
+  assetPrefix: assetPrefix,
   images: {
     unoptimized: true,
-    
     remotePatterns: [
       {
         protocol: 'https',

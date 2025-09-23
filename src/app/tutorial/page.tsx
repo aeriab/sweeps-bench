@@ -1,6 +1,7 @@
 'use client'; // This must be at the top to use hooks
 
 import { useState, FC, ReactNode } from 'react';
+import { basePath } from '../../../config';
 
 // Define props for the new dropdown component
 interface ExampleDropdownProps {
@@ -28,7 +29,7 @@ const ExampleDropdown: FC<ExampleDropdownProps> = ({ category, imagePaths, child
           {imagePaths.map((path) => (
             <img
               key={path}
-              src={`/${path}`}
+              src={`${basePath}/${path}`}
               alt={`${category} sweep example`}
               className="exampleImage"
               // Add a fallback for broken images
