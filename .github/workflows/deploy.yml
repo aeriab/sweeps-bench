@@ -39,8 +39,9 @@ jobs:
         run: npm install
 
       - name: Build Project
-        # Runs the build script defined in your package.json
         run: npm run build
+        env:
+          NEXT_PUBLIC_IMAGE_BASE_URL: https://storage.googleapis.com/selective-sweep-images
 
       - name: Setup Pages
         # Configures GitHub Pages for deployment
