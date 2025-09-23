@@ -2,6 +2,7 @@
 
 import { useState, FC, ReactNode } from 'react';
 import { basePath } from '../../../config';
+import Link from 'next/link';
 
 // Define props for the new dropdown component
 interface ExampleDropdownProps {
@@ -186,9 +187,9 @@ export default function TutorialPage() {
           The Garud Lab at UCLA uses AI to find these patterns, but to know if our models are accurate, we need your help. By playing, you are creating a vital human benchmark for science.
         </p>
 
-        <a href="/" className="homeLink">
+        <Link href="/" className="homeLink">
           &larr; Back to Home
-        </a>
+        </Link>
       </div>
     </>
   );
