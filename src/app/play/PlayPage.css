@@ -1,7 +1,7 @@
 /* Apply to the whole page to remove default spacing and scrolling */
 body {
   margin: 0;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 
@@ -41,7 +41,7 @@ body {
   /* --- Image Styling --- */
   .image-wrapper {
     width: 100%;
-    max-width: 700px;
+    max-width: 60vh;
     margin-bottom: 1.5rem;
     background-color: #fff;
     border: 1px solid #dee2e6;
