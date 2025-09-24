@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 // Import the Merriweather font
 import { Merriweather } from 'next/font/google';
 import './globals.css';
+import { basePath } from '../../config';
 
 // Configure the font
 const merriweather = Merriweather({
@@ -21,6 +22,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href={`${basePath}/favicon.png`} type="image/png" />
+      </head>
       {/* Apply the font class to the body */}
       <body className={merriweather.className}>{children}</body>
     </html>
