@@ -187,7 +187,7 @@ export default function TutorialPage() {
           The Garud Lab at UCLA uses AI to find these patterns, but to know if our models are performing well, we need your help. By playing, you are creating a vital human benchmark for science.
         </p>
 
-        <Link href={`${basePath}/`} className="homeLink">
+        <Link href="/" className="homeLink">
           &larr; Back to Home
         </Link>
       </div>

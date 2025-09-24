@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import './PlayPage.css';
-import { basePath } from '../../../config';
 
 // --- CONFIGURATION ---
 const IMAGE_CONFIG = {
@@ -238,7 +237,7 @@ export default function PlayPage() {
       </div>
 
       <footer className="quiz-footer">
-        <Link href={`${basePath}/`} className="footer-button home-link">
+        <Link href="/" className="footer-button home-link">
           Home
         </Link>
         <button className="footer-button stats-toggle" onClick={() => setIsStatsPanelOpen(true)}>
