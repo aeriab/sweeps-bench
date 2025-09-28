@@ -172,7 +172,6 @@ export default function HomePage() {
             </tbody>
           </table>
 
-          {/* --- NEW LEADERBOARD UPLOAD SECTION --- */}
           <div className="leaderboard-form">
             <input
               type="text"
@@ -185,7 +184,6 @@ export default function HomePage() {
               Upload My Score to the Leaderboard
             </button>
           </div>
-          {/* --- END NEW SECTION --- */}
           
           <div className="button-group">
             <button onClick={handleResetStats} className="reset-button">
