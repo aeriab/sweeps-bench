@@ -27,7 +27,7 @@ const ZEROED_STATS: CumulativeStats = {
 
 export default function HomePage() {
   const [stats, setStats] = useState<CumulativeStats | null>(null);
-  const [username, setUsername] = useState(''); // <-- NEW: State for the username input
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     try {
@@ -48,25 +48,24 @@ export default function HomePage() {
     setStats(ZEROED_STATS);
   };
 
-  // --- NEW: Function to handle uploading the score ---
   const handleUploadScore = async () => {
-    // 1. Validate the username
-    const cleanedUsername = username.trim();
-    if (!cleanedUsername) {
-      alert("Please enter a username before uploading your score.");
-      return;
-    }
-    // Regex for valid characters (alphanumeric, underscore, hyphen) and length (3-15)
-    const usernameRegex = /^[a-zA-Z0-9_-]{3,15}$/;
-    if (!usernameRegex.test(cleanedUsername)) {
-      alert("Invalid username. Please use only letters, numbers, underscores (_), or hyphens (-), between 3 and 15 characters.");
+    // 1. Check for minimum attempts
+    if (!stats || stats.totalAttempted < 3) {
+      alert("You must play at least 3 rounds to upload your score!");
       return;
     }
 
-    // 2. Ensure stats exist and there's at least one attempt
-    if (!stats || stats.totalAttempted === 0) {
-      alert("You need to play at least one round to upload a score!");
+    // 2. Validate the username
+    const cleanedUsername = username.trim(); // Keeps internal spaces, removes leading/trailing
+    
+    if (cleanedUsername.length < 3) {
+      alert("Please enter a username that is at least 3 characters long.");
       return;
+    }
+
+    if (cleanedUsername.length > 30) {
+        alert("Username cannot be longer than 30 characters.");
+        return;
     }
 
     // 3. Prepare the data payload
@@ -179,17 +178,16 @@ export default function HomePage() {
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter a username"
               className="username-input"
+              maxLength={30}
             />
             <button onClick={handleUploadScore} className="upload-button">
-              Upload My Score to the Leaderboard
+              Upload Score to Leaderboard
             </button>
           </div>
           
-          <div className="button-group">
-            <button onClick={handleResetStats} className="reset-button">
-              Reset Stats
-            </button>
-          </div>
+          <button onClick={handleResetStats} className="reset-button">
+            Reset Stats
+          </button>
         </div>
       )}
     </main>
