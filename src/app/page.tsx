@@ -25,9 +25,18 @@ const ZEROED_STATS: CumulativeStats = {
   },
 };
 
+// --- NEW: Define the structure for our custom alert state ---
+interface AlertState {
+  show: boolean;
+  message: string;
+  type: 'success' | 'error';
+}
+
 export default function HomePage() {
   const [stats, setStats] = useState<CumulativeStats | null>(null);
   const [username, setUsername] = useState('');
+  // --- NEW: State to manage the custom alert ---
+  const [customAlert, setCustomAlert] = useState<AlertState>({ show: false, message: '', type: 'error' });
 
   useEffect(() => {
     try {
@@ -43,48 +52,60 @@ export default function HomePage() {
     }
   }, []);
 
+  // --- NEW: Function to show a custom alert for 3 seconds ---
+  const showAlert = (message: string, type: 'success' | 'error') => {
+    setCustomAlert({ show: true, message, type });
+    setTimeout(() => {
+      setCustomAlert({ show: false, message: '', type: 'error' });
+    }, 3000);
+  };
+
   const handleResetStats = () => {
     localStorage.setItem('haplotypeQuizStats', JSON.stringify(ZEROED_STATS));
     setStats(ZEROED_STATS);
   };
 
   const handleUploadScore = async () => {
-    // 1. Check for minimum attempts
     if (!stats || stats.totalAttempted < 3) {
-      alert("You must play at least 3 rounds to upload your score!");
+      showAlert("You must play at least 3 rounds to upload your score!", 'error');
       return;
     }
 
-    // 2. Validate the username
-    const cleanedUsername = username.trim(); // Keeps internal spaces, removes leading/trailing
-    
+    const cleanedUsername = username.trim();
     if (cleanedUsername.length < 3) {
-      alert("Please enter a username that is at least 3 characters long.");
+      showAlert("Please enter a username that is at least 3 characters long.", 'error');
       return;
     }
-
     if (cleanedUsername.length > 30) {
-        alert("Username cannot be longer than 30 characters.");
-        return;
+      showAlert("Username cannot be longer than 30 characters.", 'error');
+      return;
     }
+    
+    const isConfirmed = window.confirm(
+      "Are you sure you want to submit your score? This will upload your current results to the leaderboard and reset your local statistics."
+    );
 
-    // 3. Prepare the data payload
-    const leaderboardData = {
-      username: cleanedUsername,
-      accuracy: parseFloat(calculateAccuracy()),
-      totalCorrect: stats.totalCorrect,
-      totalAttempted: stats.totalAttempted,
-      confusionMatrix: stats.cumulativeMatrix,
-      createdAt: serverTimestamp(),
-    };
+    if (isConfirmed) {
+      const leaderboardData = {
+        username: cleanedUsername,
+        accuracy: parseFloat(calculateAccuracy()),
+        totalCorrect: stats.totalCorrect,
+        totalAttempted: stats.totalAttempted,
+        confusionMatrix: stats.cumulativeMatrix,
+        createdAt: serverTimestamp(),
+      };
 
-    // 4. Send data to Firestore
-    try {
-      await addDoc(collection(db, "leaderboard"), leaderboardData);
-      alert(`Success! Your score has been uploaded for username: ${cleanedUsername}`);
-    } catch (e) {
-      console.error("Error uploading score to leaderboard: ", e);
-      alert("An error occurred while uploading your score. Please try again.");
+      try {
+        await addDoc(collection(db, "leaderboard"), leaderboardData);
+        showAlert(`Success! Your score has been uploaded for username: ${cleanedUsername}`, 'success');
+        
+        // --- NEW: Reset stats immediately after successful upload ---
+        handleResetStats();
+
+      } catch (e) {
+        console.error("Error uploading score to leaderboard: ", e);
+        showAlert("An error occurred while uploading your score. Please try again.", 'error');
+      }
     }
   };
 
@@ -95,23 +116,16 @@ export default function HomePage() {
 
   const matrixMax = useMemo(() => {
     if (!stats) return 0;
-    
-    const allValues = CATEGORIES.flatMap(guessCat => 
-        CATEGORIES.map(actualCat => stats.cumulativeMatrix[guessCat][actualCat])
+    const allValues = CATEGORIES.flatMap(guessCat =>
+      CATEGORIES.map(actualCat => stats.cumulativeMatrix[guessCat][actualCat])
     );
-
     return Math.max(...allValues);
   }, [stats]);
-  
+
   const getCellStyle = (guessCat: Category, actualCat: Category) => {
     if (!stats) return {};
-    
     const value = stats.cumulativeMatrix[guessCat][actualCat];
-    
-    if (matrixMax === 0 || value === 0) {
-      return {};
-    }
-
+    if (matrixMax === 0 || value === 0) return {};
     const proportion = value / matrixMax;
     return {
       backgroundColor: `rgba(40, 116, 166, ${proportion})`,
@@ -121,6 +135,18 @@ export default function HomePage() {
 
   return (
     <main className="main-container">
+      {customAlert.show && (
+        <div className={`custom-alert alert-${customAlert.type}`}>
+          <p>{customAlert.message}</p>
+          <button
+            onClick={() => setCustomAlert({ ...customAlert, show: false })}
+            className="alert-close-button"
+          >
+            &times;
+          </button>
+        </div>
+      )}
+
       <div className="title-container">
         <h1>Haplotype Sweep Classifier</h1>
         <p>A human benchmark for genomic pattern recognition</p>
@@ -159,7 +185,7 @@ export default function HomePage() {
                 <tr key={guessCat}>
                   <td>{guessCat}</td>
                   {CATEGORIES.map(actualCat => (
-                    <td 
+                    <td
                       key={`${guessCat}-${actualCat}`}
                       style={getCellStyle(guessCat, actualCat)}
                     >
@@ -184,7 +210,7 @@ export default function HomePage() {
               Upload Score to Leaderboard
             </button>
           </div>
-          
+
           <button onClick={handleResetStats} className="reset-button">
             Reset Stats
           </button>
