@@ -6,6 +6,7 @@ import './HomePage.css';
 import { db } from '../../lib/firebase';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
+// --- (Interfaces and constants remain the same) ---
 const CATEGORIES = ['Neutral', 'Soft', 'Hard'] as const;
 type Category = typeof CATEGORIES[number];
 type ConfusionMatrix = { [key in Category]: { [key in Category]: number } };
@@ -32,11 +33,26 @@ interface AlertState {
   isExiting: boolean;
 }
 
+// --- NEW: A generic configuration for the confirmation modal ---
+interface ModalConfig {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  onConfirm: () => void;
+}
+
 export default function HomePage() {
   const [stats, setStats] = useState<CumulativeStats | null>(null);
   const [username, setUsername] = useState('');
   const [customAlert, setCustomAlert] = useState<AlertState>({ show: false, message: '', type: 'error', isExiting: false });
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  
+  // --- MODIFIED: Replaced the simple boolean with a configuration object ---
+  const [modalConfig, setModalConfig] = useState<ModalConfig>({ 
+    isOpen: false, 
+    title: '', 
+    message: '', 
+    onConfirm: () => {} 
+  });
 
   useEffect(() => {
     try {
@@ -52,29 +68,43 @@ export default function HomePage() {
     }
   }, []);
 
-  // Context: Replace the old showAlert function
   const showAlert = (message: string, type: 'success' | 'error') => {
-    // 1. Show the alert and ensure exiting is false
     setCustomAlert({ show: true, message, type, isExiting: false });
-
-    // 2. Set a timer for how long the alert is visible
     setTimeout(() => {
-      // 3. After the time is up, trigger the exit animation
       setCustomAlert(current => ({ ...current, isExiting: true }));
-
-      // 4. Set a final timer to remove the component after the animation completes
       setTimeout(() => {
         setCustomAlert({ show: false, message: '', type: 'error', isExiting: false });
-      }, 300); // This duration MUST match your fade-out animation time
-    }, 3000); // Alert is visible for 3 seconds
+      }, 300);
+    }, 3000);
   };
 
-  const handleResetStats = () => {
-    localStorage.setItem('haplotypeQuizStats', JSON.stringify(ZEROED_STATS));
-    setStats(ZEROED_STATS);
+  // --- NEW: A generic function to close the modal ---
+  const handleCloseModal = () => {
+    setModalConfig({ isOpen: false, title: '', message: '', onConfirm: () => {} });
   };
   
-  // --- MODIFIED: This function now just validates and opens the modal ---
+  // --- NEW: The function that runs after confirming a stat reset ---
+  const confirmAndResetStats = () => {
+    localStorage.setItem('haplotypeQuizStats', JSON.stringify(ZEROED_STATS));
+    setStats(ZEROED_STATS);
+    showAlert("Your stats have been successfully reset.", 'success');
+    handleCloseModal();
+  };
+  
+  // --- MODIFIED: This function now just opens the modal for resetting ---
+  const handleResetStats = () => {
+    if (stats?.totalAttempted === 0) {
+        showAlert("There are no stats to reset.", 'error');
+        return;
+    }
+    setModalConfig({
+        isOpen: true,
+        title: "Confirm Reset",
+        message: "This will permanently delete your local statistics. Are you sure you want to proceed?",
+        onConfirm: confirmAndResetStats
+    });
+  };
+  
   const handleUploadScore = async () => {
     if (!stats || stats.totalAttempted < 3) {
       showAlert("You must play at least 3 rounds to upload your score!", 'error');
@@ -90,15 +120,18 @@ export default function HomePage() {
       return;
     }
     
-    // Open the confirmation modal instead of calling window.confirm
-    setIsConfirmModalOpen(true);
+    // --- MODIFIED: Opens the modal with upload-specific configuration ---
+    setModalConfig({
+        isOpen: true,
+        title: "Confirm Submission",
+        message: "This will upload your score to the leaderboard and reset your local statistics. Are you sure?",
+        onConfirm: confirmAndUploadScore
+    });
   };
   
   const confirmAndUploadScore = async () => {
-    setIsConfirmModalOpen(false); // Close the modal immediately
-
     const cleanedUsername = username.trim();
-    if (!stats) return; // Should not happen, but good for type safety
+    if (!stats) return;
 
     const leaderboardData = {
       username: cleanedUsername,
@@ -112,13 +145,17 @@ export default function HomePage() {
     try {
       await addDoc(collection(db, "leaderboard"), leaderboardData);
       showAlert(`Success! Your score has been uploaded for username: ${cleanedUsername}`, 'success');
-      handleResetStats();
+      // Directly reset stats after successful upload
+      localStorage.setItem('haplotypeQuizStats', JSON.stringify(ZEROED_STATS));
+      setStats(ZEROED_STATS);
     } catch (e) {
       console.error("Error uploading score to leaderboard: ", e);
       showAlert("An error occurred while uploading your score. Please try again.", 'error');
     }
+    handleCloseModal();
   };
 
+  // --- (calculateAccuracy, matrixMax, getCellStyle functions remain the same) ---
   const calculateAccuracy = () => {
     if (!stats || stats.totalAttempted === 0) return '0.0';
     return ((stats.totalCorrect / stats.totalAttempted) * 100).toFixed(1);
@@ -156,25 +193,26 @@ export default function HomePage() {
           </button>
         </div>
       )}
-
-      {/* --- NEW: Confirmation Modal Component --- */}
-      {isConfirmModalOpen && (
+      
+      {/* --- MODIFIED: The modal is now generic and reads from state --- */}
+      {modalConfig.isOpen && (
         <div className="confirm-modal-overlay">
           <div className="confirm-modal-content">
-            <h3>Confirm Submission</h3>
-            <p>This will upload your score to the leaderboard and permanently reset your local statistics. Are you sure you want to proceed?</p>
+            <h3>{modalConfig.title}</h3>
+            <p>{modalConfig.message}</p>
             <div className="confirm-modal-buttons">
-              <button onClick={() => setIsConfirmModalOpen(false)} className="modal-button modal-button-cancel">
+              <button onClick={handleCloseModal} className="modal-button modal-button-cancel">
                 Cancel
               </button>
-              <button onClick={confirmAndUploadScore} className="modal-button modal-button-confirm">
-                Confirm & Submit
+              <button onClick={modalConfig.onConfirm} className="modal-button modal-button-confirm">
+                Confirm
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* --- (Rest of the JSX remains the same) --- */}
       <div className="title-container">
         <h1>Haplotype Sweep Classifier</h1>
         <p>A human benchmark for genomic pattern recognition</p>
@@ -198,7 +236,6 @@ export default function HomePage() {
             Overall Accuracy: <strong>{calculateAccuracy()}%</strong> ({stats.totalCorrect} / {stats.totalAttempted} correct)
           </p>
           <table className="stats-matrix">
-            {/* ... table content remains the same ... */}
             <thead>
               <tr>
                 <th></th>
