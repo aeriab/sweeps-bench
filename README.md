@@ -1,6 +1,11 @@
 Play this human benchmark here: https://aeriab.github.io/sweeps-bench/
 
 
+Set up for development:
+npm install
+npm install firebase
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -39,5 +44,3 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 Should now be up and running.
-
-Testing changes with github
