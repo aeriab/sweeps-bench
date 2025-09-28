@@ -3,8 +3,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import './HomePage.css';
+import { db } from '../../lib/firebase';
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-// Define the structure for our stats object
 const CATEGORIES = ['Neutral', 'Soft', 'Hard'] as const;
 type Category = typeof CATEGORIES[number];
 type ConfusionMatrix = { [key in Category]: { [key in Category]: number } };
@@ -14,7 +15,6 @@ interface CumulativeStats {
   cumulativeMatrix: ConfusionMatrix;
 }
 
-// Define a constant for the zeroed-out stats structure
 const ZEROED_STATS: CumulativeStats = {
   totalCorrect: 0,
   totalAttempted: 0,
@@ -27,8 +27,8 @@ const ZEROED_STATS: CumulativeStats = {
 
 export default function HomePage() {
   const [stats, setStats] = useState<CumulativeStats | null>(null);
+  const [username, setUsername] = useState(''); // <-- NEW: State for the username input
 
-  // Load stats from localStorage or initialize with zeros
   useEffect(() => {
     try {
       const savedStats = localStorage.getItem('haplotypeQuizStats');
@@ -48,16 +48,55 @@ export default function HomePage() {
     setStats(ZEROED_STATS);
   };
 
+  // --- NEW: Function to handle uploading the score ---
+  const handleUploadScore = async () => {
+    // 1. Validate the username
+    const cleanedUsername = username.trim();
+    if (!cleanedUsername) {
+      alert("Please enter a username before uploading your score.");
+      return;
+    }
+    // Regex for valid characters (alphanumeric, underscore, hyphen) and length (3-15)
+    const usernameRegex = /^[a-zA-Z0-9_-]{3,15}$/;
+    if (!usernameRegex.test(cleanedUsername)) {
+      alert("Invalid username. Please use only letters, numbers, underscores (_), or hyphens (-), between 3 and 15 characters.");
+      return;
+    }
+
+    // 2. Ensure stats exist and there's at least one attempt
+    if (!stats || stats.totalAttempted === 0) {
+      alert("You need to play at least one round to upload a score!");
+      return;
+    }
+
+    // 3. Prepare the data payload
+    const leaderboardData = {
+      username: cleanedUsername,
+      accuracy: parseFloat(calculateAccuracy()),
+      totalCorrect: stats.totalCorrect,
+      totalAttempted: stats.totalAttempted,
+      confusionMatrix: stats.cumulativeMatrix,
+      createdAt: serverTimestamp(),
+    };
+
+    // 4. Send data to Firestore
+    try {
+      await addDoc(collection(db, "leaderboard"), leaderboardData);
+      alert(`Success! Your score has been uploaded for username: ${cleanedUsername}`);
+    } catch (e) {
+      console.error("Error uploading score to leaderboard: ", e);
+      alert("An error occurred while uploading your score. Please try again.");
+    }
+  };
+
   const calculateAccuracy = () => {
     if (!stats || stats.totalAttempted === 0) return '0.0';
     return ((stats.totalCorrect / stats.totalAttempted) * 100).toFixed(1);
   };
 
-  // --- MODIFIED: Calculate matrix-wide maximum value for heatmap scaling ---
   const matrixMax = useMemo(() => {
     if (!stats) return 0;
     
-    // Flatten all values from the matrix into a single array and find the max
     const allValues = CATEGORIES.flatMap(guessCat => 
         CATEGORIES.map(actualCat => stats.cumulativeMatrix[guessCat][actualCat])
     );
@@ -65,21 +104,19 @@ export default function HomePage() {
     return Math.max(...allValues);
   }, [stats]);
   
-  // --- MODIFIED: Function to get the dynamic style for each cell based on matrix-wide max ---
   const getCellStyle = (guessCat: Category, actualCat: Category) => {
     if (!stats) return {};
     
     const value = stats.cumulativeMatrix[guessCat][actualCat];
     
     if (matrixMax === 0 || value === 0) {
-      return {}; // No background for zero values
+      return {};
     }
 
     const proportion = value / matrixMax;
-    // Base color: a scientific-looking blue. RGBA allows for transparency.
     return {
       backgroundColor: `rgba(40, 116, 166, ${proportion})`,
-      color: proportion > 0.5 ? 'white' : 'inherit', // Make text readable on dark backgrounds
+      color: proportion > 0.5 ? 'white' : 'inherit',
     };
   };
 
@@ -134,12 +171,29 @@ export default function HomePage() {
               ))}
             </tbody>
           </table>
-          <button onClick={handleResetStats} className="reset-button">
-            Reset Stats
-          </button>
+
+          {/* --- NEW LEADERBOARD UPLOAD SECTION --- */}
+          <div className="leaderboard-form">
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter a username"
+              className="username-input"
+            />
+            <button onClick={handleUploadScore} className="upload-button">
+              Upload My Score to the Leaderboard
+            </button>
+          </div>
+          {/* --- END NEW SECTION --- */}
+          
+          <div className="button-group">
+            <button onClick={handleResetStats} className="reset-button">
+              Reset Stats
+            </button>
+          </div>
         </div>
       )}
     </main>
   );
 }
-
