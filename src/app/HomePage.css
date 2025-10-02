@@ -363,3 +363,98 @@
     transform: translate(-50%, -20px);
   }
 }
+
+/* --- NEW: Leaderboard Container Styles --- */
+.leaderboard-container {
+  width: 100%;
+  max-width: 800px; /* Wider than stats container */
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.leaderboard-table th {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #495057;
+}
+
+.leaderboard-table td {
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+.leaderboard-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Center rank and details button */
+.leaderboard-table th:first-child, .leaderboard-table td:first-child,
+.leaderboard-table th:last-child, .leaderboard-table td:last-child {
+  text-align: center;
+}
+
+.view-stats-button {
+  font-family: 'Merriweather', serif;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-stats-button:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  transform: translateY(-1px);
+}
+
+/* --- NEW: Stats Modal Styles --- */
+.stats-modal-content {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 600px; /* Same as stats container */
+  text-align: center;
+  animation: modalContentFadeIn 0.3s ease-out;
+}
+
+.stats-modal-content h3 {
+  margin-top: 0;
+  font-size: 1.75rem;
+  color: #343a40;
+}
+
+.modal-button-close {
+  background-color: #6c757d;
+  color: white;
+  margin-top: 1.5rem;
+  border: none;
+}
+
+.modal-button-close:hover {
+  background-color: #5a6268;
+}
