@@ -115,31 +115,31 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStat, setSelectedStat] = useState<LeaderboardEntry | null>(null);
 
+  const fetchLeaderboard = async () => {
+    try {
+        const leaderboardCol = collection(db, "leaderboard");
+        const q = query(leaderboardCol, orderBy("accuracy", "desc"), limit(10));
+        const querySnapshot = await getDocs(q);
+        // Firestore data uses 'confusionMatrix', so we rename it on fetch for consistency
+        const data = querySnapshot.docs.map(doc => {
+          const docData = doc.data();
+          return { 
+            id: doc.id, 
+            ...docData,
+            cumulativeMatrix: docData.confusionMatrix 
+          }
+        }) as LeaderboardEntry[];
+        setLeaderboard(data);
+    } catch (error) {
+        console.error("Error fetching leaderboard: ", error);
+        showAlert("Could not fetch leaderboard data.", 'error');
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
   // --- NEW: Effect to fetch leaderboard data on mount ---
   useEffect(() => {
-    const fetchLeaderboard = async () => {
-        try {
-            const leaderboardCol = collection(db, "leaderboard");
-            const q = query(leaderboardCol, orderBy("accuracy", "desc"), limit(10));
-            const querySnapshot = await getDocs(q);
-            // Firestore data uses 'confusionMatrix', so we rename it on fetch for consistency
-            const data = querySnapshot.docs.map(doc => {
-              const docData = doc.data();
-              return { 
-                id: doc.id, 
-                ...docData,
-                cumulativeMatrix: docData.confusionMatrix 
-              }
-            }) as LeaderboardEntry[];
-            setLeaderboard(data);
-        } catch (error) {
-            console.error("Error fetching leaderboard: ", error);
-            showAlert("Could not fetch leaderboard data.", 'error');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     fetchLeaderboard();
   }, []);
 
@@ -190,12 +190,13 @@ export default function HomePage() {
       accuracy: parseFloat(calculateAccuracy()),
       totalCorrect: stats.totalCorrect,
       totalAttempted: stats.totalAttempted,
-      confusionMatrix: stats.cumulativeMatrix, // <-- CORRECTED MAPPING
+      confusionMatrix: stats.cumulativeMatrix,
       createdAt: serverTimestamp(),
     };
     try {
       await addDoc(collection(db, "leaderboard"), leaderboardData);
       showAlert(`Success! Your score has been uploaded for username: ${cleanedUsername}`, 'success');
+      fetchLeaderboard();
       localStorage.setItem('haplotypeQuizStats', JSON.stringify(ZEROED_STATS));
       setStats(ZEROED_STATS);
     } catch (e) {
