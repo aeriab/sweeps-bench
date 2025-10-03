@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import './HomePage.css';
 import { db } from '../../lib/firebase';
-import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, limit, getCountFromServer, startAfter, endBefore, limitToLast, DocumentSnapshot } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, query, orderBy, limit, getCountFromServer, startAfter, DocumentSnapshot } from "firebase/firestore";
 
 // --- Interfaces and Constants ---
 const CATEGORIES = ['Neutral', 'Soft', 'Hard'] as const;
@@ -104,18 +104,12 @@ const StatsMatrixView = (stats: CumulativeStats) => {
 };
 
 // --- NEW: Pagination Component ---
-const Pagination = ({ currentPage, totalPages, onPageChange }: { currentPage: number, totalPages: number, onPageChange: (page: number, direction: 'next' | 'prev') => void }) => {
+const Pagination = ({ currentPage, totalPages, onPageChange }: { currentPage: number, totalPages: number, onPageChange: (page: number) => void }) => {
   if (totalPages <= 1) return null;
 
-  const handlePrev = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1, 'prev');
-    }
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      onPageChange(currentPage + 1, 'next');
+  const handlePageClick = (page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      onPageChange(page);
     }
   };
 
@@ -138,7 +132,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: { currentPage: nu
 
   return (
     <div className="pagination-container">
-      <button onClick={handlePrev} disabled={currentPage === 1} className="pagination-button">
+      <button onClick={() => handlePageClick(currentPage - 1)} disabled={currentPage === 1} className="pagination-button">
         &lt; Previous
       </button>
       {getPageNumbers().map((page, index) =>
@@ -147,14 +141,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: { currentPage: nu
         ) : (
           <button
             key={page}
-            onClick={() => alert('Jumping to specific pages requires a more complex query. Please use Next/Previous.')} // Simplified for this example
+            onClick={() => handlePageClick(page)}
             className={`pagination-button ${currentPage === page ? 'active' : ''}`}
           >
             {page}
           </button>
         )
       )}
-      <button onClick={handleNext} disabled={currentPage === totalPages} className="pagination-button">
+      <button onClick={() => handlePageClick(currentPage + 1)} disabled={currentPage === totalPages} className="pagination-button">
         Next &gt;
       </button>
     </div>
@@ -178,20 +172,32 @@ export default function HomePage() {
   const [firstVisible, setFirstVisible] = useState<DocumentSnapshot | null>(null);
   const [lastVisible, setLastVisible] = useState<DocumentSnapshot | null>(null);
 
-  const fetchLeaderboardPage = async (page: number = 1, direction: 'next' | 'prev' | 'initial' = 'initial') => {
+  const fetchLeaderboardPage = async (targetPage: number) => {
     setIsLoading(true);
     try {
       const leaderboardCol = collection(db, "leaderboard");
       let q;
 
-      if (direction === 'next' && lastVisible) {
-        q = query(leaderboardCol, orderBy("accuracy", "desc"), startAfter(lastVisible), limit(SCORES_PER_PAGE));
-      } else if (direction === 'prev' && firstVisible) {
-        q = query(leaderboardCol, orderBy("accuracy", "desc"), endBefore(firstVisible), limitToLast(SCORES_PER_PAGE));
-      } else {
+      if (targetPage === 1) {
+        // Query for the first page directly
         q = query(leaderboardCol, orderBy("accuracy", "desc"), limit(SCORES_PER_PAGE));
-      }
+      } else {
+        // To jump to any other page, we get the cursor from the last document of the previous page.
+        const docsToFetchForCursor = (targetPage - 1) * SCORES_PER_PAGE;
+        const cursorQuery = query(leaderboardCol, orderBy("accuracy", "desc"), limit(docsToFetchForCursor));
+        const cursorSnapshot = await getDocs(cursorQuery);
 
+        if (cursorSnapshot.docs.length < docsToFetchForCursor) {
+            console.warn(`Page ${targetPage} is out of bounds.`);
+            showAlert('This page does not exist.', 'error');
+            setIsLoading(false);
+            return;
+        }
+
+        const cursorDoc = cursorSnapshot.docs[cursorSnapshot.docs.length - 1];
+        q = query(leaderboardCol, orderBy("accuracy", "desc"), startAfter(cursorDoc), limit(SCORES_PER_PAGE));
+      }
+      
       const querySnapshot = await getDocs(q);
       const data = querySnapshot.docs.map(doc => {
         const docData = doc.data();
@@ -202,10 +208,16 @@ export default function HomePage() {
         }
       }) as LeaderboardEntry[];
 
+      if (querySnapshot.empty && targetPage > 1) {
+        showAlert('This page does not exist.', 'error');
+        setIsLoading(false);
+        return;
+      }
+
       setLeaderboard(data);
       setFirstVisible(querySnapshot.docs[0] || null);
       setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1] || null);
-      setCurrentPage(page);
+      setCurrentPage(targetPage);
 
     } catch (error) {
       console.error("Error fetching leaderboard: ", error);
@@ -221,7 +233,7 @@ export default function HomePage() {
       const countSnapshot = await getCountFromServer(leaderboardCol);
       const totalScores = countSnapshot.data().count;
       setTotalPages(Math.ceil(totalScores / SCORES_PER_PAGE));
-      await fetchLeaderboardPage(1, 'initial');
+      await fetchLeaderboardPage(1); // Fetch the first page
       setIsLoading(false);
   };
 
