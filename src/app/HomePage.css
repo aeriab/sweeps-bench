@@ -458,3 +458,50 @@
 .modal-button-close:hover {
   background-color: #5a6268;
 }
+
+/* --- Pagination Styles --- */
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+  gap: 8px;
+  font-family: 'Lato', sans-serif; /* A clean sans-serif for controls */
+}
+
+.pagination-button {
+  padding: 8px 14px;
+  border: 1px solid #d1d5db; /* A light, neutral border */
+  background-color: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #f3f4f6; /* Subtle hover effect */
+  border-color: #9ca3af;
+}
+
+.pagination-button.active {
+  background-color: #2874a6; /* Main theme blue */
+  color: white;
+  border-color: #2874a6;
+  font-weight: bold;
+  cursor: default;
+}
+
+.pagination-button:disabled {
+  color: #9ca3af; /* Faded text for disabled state */
+  background-color: #f9fafb;
+  cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  padding: 8px 4px;
+  color: #6b7280;
+  font-weight: bold;
+}

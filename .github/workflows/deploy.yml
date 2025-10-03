@@ -37,9 +37,6 @@ jobs:
       - name: Install Dependencies
         # Installs your project's npm dependencies
         run: npm install
-        
-      - name: Debug API Key
-        run: echo "${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}" | sed 's/./& /g'
 
       - name: Build Project
         run: npm run build

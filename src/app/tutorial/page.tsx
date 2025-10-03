@@ -4,15 +4,15 @@ import { useState, FC, ReactNode } from 'react';
 import { basePath } from '../../../config';
 import Link from 'next/link';
 
-// Define props for the new dropdown component
+// Define props for the dropdown component
 interface ExampleDropdownProps {
   category: string;
-  imagePaths: string[];
+  imagePath: string; // Changed to a single path
   children: ReactNode;
 }
 
 // Reusable Dropdown Component
-const ExampleDropdown: FC<ExampleDropdownProps> = ({ category, imagePaths, children }) => {
+const ExampleDropdown: FC<ExampleDropdownProps> = ({ category, imagePath, children }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -26,21 +26,17 @@ const ExampleDropdown: FC<ExampleDropdownProps> = ({ category, imagePaths, child
       </button>
 
       {isOpen && (
-        <div className="imageGrid">
-          {imagePaths.map((path) => (
-            <img
-              key={path}
-              src={`${basePath}/${path}`}
-              alt={`${category} sweep example`}
-              className="exampleImage"
-              // Add a fallback for broken images
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.onerror = null; // prevent infinite loop
-                target.src = "https://placehold.co/200x200/eee/ccc?text=Image+Not+Found";
-              }}
-            />
-          ))}
+        <div className="imageContainer"> {/* Container for the single image */}
+          <img
+            src={`${basePath}/${imagePath}`}
+            alt={`${category} sweep example`}
+            className="exampleImage"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null; // prevent infinite loop
+              target.src = "https://placehold.co/600x200/eee/ccc?text=Image+Not+Found";
+            }}
+          />
         </div>
       )}
     </li>
@@ -122,10 +118,7 @@ export default function TutorialPage() {
           transform: rotate(90deg);
         }
 
-        .imageGrid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1rem;
+        .imageContainer {
           margin-top: 1.25rem;
           padding-top: 1rem;
           border-top: 1px solid #e5e5e5;
@@ -148,23 +141,23 @@ export default function TutorialPage() {
         <ul className="ruleList">
           <ExampleDropdown
             category="Hard"
-            imagePaths={['hard_sweep_1.png', 'hard_sweep_2.png', 'hard_sweep_3.png']}
+            imagePath={'hard_sweep_1.png'}
           >
-            <strong>Hard Sweep:</strong> Usually shows one long, solid stripe at the top.
+            <strong>Hard Sweep:</strong> Usually shows one long, solid pattern of just red and white at the top.
           </ExampleDropdown>
 
           <ExampleDropdown
             category="Soft"
-            imagePaths={['soft_sweep_1.png', 'soft_sweep_2.png', 'soft_sweep_3.png']}
+            imagePath={'soft_sweep_1.png'}
           >
-            <strong>Soft Sweep:</strong> Tends to have several different stripes starting from the top.
+            <strong>Soft Sweep:</strong> Tends to have several different horizontal bands with chunks of black.
           </ExampleDropdown>
 
           <ExampleDropdown
             category="Neutral"
-            imagePaths={['neutral_sweep_1.png', 'neutral_sweep_2.png', 'neutral_sweep_3.png']}
+            imagePath={'neutral_sweep_1.png'}
           >
-            <strong>Neutral:</strong> Typically lacks any strong vertical patterns.
+            <strong>Neutral:</strong> Typically lacks any strong vertical banding patterns.
           </ExampleDropdown>
         </ul>
 
@@ -194,4 +187,3 @@ export default function TutorialPage() {
     </>
   );
 }
-

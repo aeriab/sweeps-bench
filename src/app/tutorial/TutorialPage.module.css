@@ -40,7 +40,7 @@
   text-decoration: none;
 }
 
-/* --- NEW STYLES FOR DROPDOWN --- */
+/* --- STYLES FOR DROPDOWN --- */
 .exampleButton {
   display: inline-flex;
   align-items: center;
@@ -68,10 +68,7 @@
   transform: rotate(90deg);
 }
 
-.imageGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+.imageContainer {
   margin-top: 1.25rem;
   padding-top: 1rem;
   border-top: 1px solid #e5e5e5;
