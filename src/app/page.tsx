@@ -13,7 +13,7 @@ type ConfusionMatrix = { [key in Category]: { [key in Category]: number } };
 interface CumulativeStats {
   totalCorrect: number;
   totalAttempted: number;
-  confusionMatrix: ConfusionMatrix;
+  cumulativeMatrix: ConfusionMatrix; // <-- CORRECTED NAME
 }
 
 // --- NEW: Define the structure for a leaderboard entry ---
@@ -26,7 +26,7 @@ interface LeaderboardEntry extends CumulativeStats {
 const ZEROED_STATS: CumulativeStats = {
   totalCorrect: 0,
   totalAttempted: 0,
-  confusionMatrix: {
+  cumulativeMatrix: { // <-- CORRECTED NAME
     Neutral: { Neutral: 0, Soft: 0, Hard: 0 },
     Soft: { Neutral: 0, Soft: 0, Hard: 0 },
     Hard: { Neutral: 0, Soft: 0, Hard: 0 },
@@ -48,13 +48,13 @@ interface ModalConfig {
 }
 
 // --- NEW: Reusable component to display a confusion matrix ---
-const StatsMatrixView = ({ stats }: { stats: CumulativeStats }) => {
+const StatsMatrixView = (stats: CumulativeStats) => {
     const matrixMax = useMemo(() => {
-        if (!stats || !stats.confusionMatrix) return 0;
+        if (!stats || !stats.cumulativeMatrix) return 0; // <-- CORRECTED NAME
 
         const allValues = CATEGORIES.flatMap(guessCat =>
             CATEGORIES.map(actualCat =>
-                stats.confusionMatrix[guessCat]?.[actualCat] ?? 0 // <-- CHANGED
+                stats.cumulativeMatrix[guessCat]?.[actualCat] ?? 0 // <-- CORRECTED NAME
             )
         );
         return Math.max(...allValues, 1); // Avoid division by zero
@@ -69,7 +69,7 @@ const StatsMatrixView = ({ stats }: { stats: CumulativeStats }) => {
         };
     };
 
-    if (!stats || !stats.confusionMatrix) { // <-- CHANGED
+    if (!stats || !stats.cumulativeMatrix) { // <-- CORRECTED NAME
       return <p>Confusion matrix data is not available for this entry.</p>;
     }
 
@@ -91,10 +91,10 @@ const StatsMatrixView = ({ stats }: { stats: CumulativeStats }) => {
                         <td>{guessCat}</td>
                         {CATEGORIES.map(actualCat => (
                             <td key={`${guessCat}-${actualCat}`} style={getCellStyle(
-                              stats.confusionMatrix[guessCat]?.[actualCat] ?? 0 // <-- CHANGED
-                          )}>
-                              {stats.confusionMatrix[guessCat]?.[actualCat] ?? 0}
-                          </td>
+                                stats.cumulativeMatrix[guessCat]?.[actualCat] ?? 0 // <-- CORRECTED NAME
+                            )}>
+                                {stats.cumulativeMatrix[guessCat]?.[actualCat] ?? 0} {/* <-- CORRECTED NAME */}
+                            </td>
                         ))}
                     </tr>
                 ))}
@@ -122,7 +122,15 @@ export default function HomePage() {
             const leaderboardCol = collection(db, "leaderboard");
             const q = query(leaderboardCol, orderBy("accuracy", "desc"), limit(10));
             const querySnapshot = await getDocs(q);
-            const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as LeaderboardEntry[];
+            // Firestore data uses 'confusionMatrix', so we rename it on fetch for consistency
+            const data = querySnapshot.docs.map(doc => {
+              const docData = doc.data();
+              return { 
+                id: doc.id, 
+                ...docData,
+                cumulativeMatrix: docData.confusionMatrix 
+              }
+            }) as LeaderboardEntry[];
             setLeaderboard(data);
         } catch (error) {
             console.error("Error fetching leaderboard: ", error);
@@ -182,7 +190,7 @@ export default function HomePage() {
       accuracy: parseFloat(calculateAccuracy()),
       totalCorrect: stats.totalCorrect,
       totalAttempted: stats.totalAttempted,
-      confusionMatrix: stats.confusionMatrix,
+      confusionMatrix: stats.cumulativeMatrix, // <-- CORRECTED MAPPING
       createdAt: serverTimestamp(),
     };
     try {
@@ -218,7 +226,7 @@ export default function HomePage() {
                 <p className="stats-summary">
                     Overall Accuracy: <strong>{selectedStat.accuracy.toFixed(1)}%</strong> ({selectedStat.totalCorrect} / {selectedStat.totalAttempted} correct)
                 </p>
-                <StatsMatrixView stats={selectedStat} />
+                <StatsMatrixView {...selectedStat} />
                 <button onClick={() => setSelectedStat(null)} className="modal-button modal-button-close">
                     Close
                 </button>
@@ -233,7 +241,7 @@ export default function HomePage() {
         <div className="stats-container">
           <h2 className="stats-title">Your Cumulative Statistics</h2>
           <p className="stats-summary">Overall Accuracy: <strong>{calculateAccuracy()}%</strong> ({stats.totalCorrect} / {stats.totalAttempted} correct)</p>
-          <StatsMatrixView stats={stats} />
+          <StatsMatrixView {...stats} />
           <div className="leaderboard-form"><input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter a username" className="username-input" maxLength={30} /><button onClick={handleUploadScore} className="upload-button">Upload Score to Leaderboard</button></div>
           <button onClick={handleResetStats} className="reset-button">Reset Stats</button>
         </div>
