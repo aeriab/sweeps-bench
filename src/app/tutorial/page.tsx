@@ -157,9 +157,13 @@ export default function TutorialPage() {
             category="Neutral"
             imagePath={'neutral_sweep_1.png'}
           >
-            <strong>Neutral:</strong> Typically lacks any strong vertical banding patterns.
+            <strong>Neutral:</strong> Typically lacks any strong banding patterns.
           </ExampleDropdown>
         </ul>
+
+        <p>
+          Don't be discouraged if you get a wrong answer. Sorting these images is an ongoing focus of evolutionary biology researchers.
+        </p>
 
         <h2 className="sectionTitle">The Science Behind the Images 🧬</h2>
 
@@ -177,7 +181,7 @@ export default function TutorialPage() {
 
         <h2 className="sectionTitle">Your Mission</h2>
         <p>
-          The Garud Lab at UCLA uses AI to find these patterns, but to know if our models are performing well, we need your help. By playing, you are creating a vital human benchmark for science.
+          The Garud Lab at UCLA uses computer vision techniques to find these patterns, but to know if our machine learning models are performing well, we need your help. By playing, you are creating a vital human benchmark for science. Please feel free to submit your score to the leaderboard!
         </p>
 
         <Link href="/" className="homeLink">

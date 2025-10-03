@@ -345,8 +345,8 @@ export default function HomePage() {
       )}
 
       {/* --- Header and Navigation --- */}
-      <div className="title-container"><h1>Haplotype Sweep Classifier</h1><p>A human benchmark for genomic pattern recognition</p></div>
-      <div className="nav-container"><Link href="/tutorial" className="nav-button tutorial-button"><h2 className="button-title">Tutorial</h2><p className="button-subtitle">A Quick Guide to Spotting Evolution</p></Link><Link href="/play" className="nav-button play-button"><h2 className="button-title">Play</h2><p className="button-subtitle">Test your skills and classify sweep images.</p></Link></div>
+      <div className="title-container"><h1>Haplotype Sweep Classifier</h1><p>A human benchmark for ongoing biology research</p></div>
+      <div className="nav-container"><Link href="/tutorial" className="nav-button tutorial-button"><h2 className="button-title">Tutorial</h2><p className="button-subtitle">A Quick Guide to Spotting Evolution</p></Link><Link href="/play" className="nav-button play-button"><h2 className="button-title">Play</h2><p className="button-subtitle">Test your pattern recognition skills.</p></Link></div>
 
       {/* --- User Statistics Section --- */}
       {stats && (
