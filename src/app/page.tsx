@@ -113,21 +113,39 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: { currentPage: nu
     }
   };
 
-  // Logic to generate page numbers with ellipses (e.g., 1 ... 4 5 6 ... 10)
+  // Logic to generate an expanded list of page numbers
   const getPageNumbers = () => {
     const pages = [];
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      if (currentPage > 3) pages.push('...');
-      if (currentPage > 2) pages.push(currentPage - 1);
-      if (currentPage !== 1 && currentPage !== totalPages) pages.push(currentPage);
-      if (currentPage < totalPages - 1) pages.push(currentPage + 1);
-      if (currentPage < totalPages - 2) pages.push('...');
+    const pageBuffer = 2; // How many pages to show on each side of the current page
+
+    // Always show the first page
+    pages.push(1);
+
+    // Add left ellipsis if the current page is far from the beginning
+    if (currentPage > pageBuffer + 2) {
+      pages.push('...');
+    }
+
+    // Determine the range of pages to display around the current page
+    const startPage = Math.max(2, currentPage - pageBuffer);
+    const endPage = Math.min(totalPages - 1, currentPage + pageBuffer);
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    // Add right ellipsis if the current page is far from the end
+    if (currentPage < totalPages - pageBuffer - 1) {
+      pages.push('...');
+    }
+    
+    // Always show the last page, if it's not the first page
+    if (totalPages > 1) {
       pages.push(totalPages);
     }
-    return [...new Set(pages)]; // Remove duplicates
+    
+    // Use a Set to remove any duplicate page numbers that might arise in edge cases
+    return [...new Set(pages)];
   };
 
   return (
@@ -303,7 +321,7 @@ export default function HomePage() {
     }
   };
   const handleUploadScore = async () => {
-    if (!stats || stats.totalAttempted < 0) { showAlert("You must play at least 0 rounds to upload score!", 'error'); return; }
+    if (!stats || stats.totalAttempted < 30) { showAlert("You must play at least 30 rounds to upload score!", 'error'); return; }
     const cleanedUsername = username.trim();
     if (cleanedUsername.length < 3) { showAlert("Username must be at least 3 characters.", 'error'); return; }
     if (cleanedUsername.length > 30) { showAlert("Username cannot be longer than 30 characters.", 'error'); return; }
