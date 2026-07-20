@@ -53,7 +53,16 @@ export default function PlayPage() {
     try {
       const savedStatsRaw = localStorage.getItem('haplotypeQuizStats');
       if (savedStatsRaw) {
-        setCumulativeStats(JSON.parse(savedStatsRaw));
+        const parsed = JSON.parse(savedStatsRaw);
+        setCumulativeStats({
+          totalCorrect: typeof parsed.totalCorrect === 'number' ? parsed.totalCorrect : 0,
+          totalAttempted: typeof parsed.totalAttempted === 'number' ? parsed.totalAttempted : 0,
+          cumulativeMatrix: {
+            Neutral: { ...ZEROED_STATS.cumulativeMatrix.Neutral, ...parsed.cumulativeMatrix?.Neutral },
+            Soft: { ...ZEROED_STATS.cumulativeMatrix.Soft, ...parsed.cumulativeMatrix?.Soft },
+            Hard: { ...ZEROED_STATS.cumulativeMatrix.Hard, ...parsed.cumulativeMatrix?.Hard },
+          },
+        });
       }
     } catch (e) {
       console.error("Failed to load stats, starting fresh.", e);
