@@ -8,14 +8,6 @@ const nextConfig = {
   assetPrefix: assetPrefix,
   images: {
     unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'storage.googleapis.com',
-        port: '',
-        pathname: '/**',
-      },
-    ],
   },
 };
 

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { basePath } from '../../../config';
 import './PlayPage.css';
 
 // --- CONFIGURATION ---
@@ -69,7 +70,7 @@ export default function PlayPage() {
     const categoryInfo = IMAGE_CONFIG[randomCategory];
     const randomIndex = Math.floor(Math.random() * categoryInfo.count) + 1;
     const imageName = `${categoryInfo.prefix}${randomIndex}${IMAGE_EXTENSION}`;
-    const imagePath = `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}/${categoryInfo.folder}/${imageName}`;
+    const imagePath = `${basePath}/SweepImages/${categoryInfo.folder}/${imageName}`;
     setCurrentImage(imagePath);
     setCorrectAnswer(randomCategory);
   };

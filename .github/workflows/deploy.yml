@@ -41,7 +41,6 @@ jobs:
       - name: Build Project
         run: npm run build
         env:
-          NEXT_PUBLIC_IMAGE_BASE_URL: https://storage.googleapis.com/selective-sweep-images
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
           NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
