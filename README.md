@@ -1,46 +1,19 @@
-Play this human benchmark here: https://aeriab.github.io/sweeps-bench/
+Play this science project here: https://aeriab.github.io/sweeps-bench/
 
+Researchers in the Garud lab are trying to identify what type of natural selection has occurred in our ancient human ancestors using something called a haplotype image. There are subtle visual details in these haplotype images which our machine learning models use, but very few humans have tried this task of categorizing haplotype images.
 
-Set up for development:
-npm install
-npm install firebase
+In this game, users are shown a haplotype image and are tasked with categorizing these images as "Hard", "Soft", or "Neutral".
 
+<img width="1653" height="768" alt="image" src="https://github.com/user-attachments/assets/180f311b-77af-4c55-9ff8-2a58b7ec0e1b" />
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+&ensp;
 
-## Getting Started
+Track your accuracy and find out which types of haplotype images are easier for you to identify.
 
-First, run the development server:
+<img width="1435" height="665" alt="image" src="https://github.com/user-attachments/assets/7450d3b3-de43-44e1-97d8-ca1ef9ecccdf" />
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+&ensp;
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Be as accurate as possible and climb the leaderboard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-Should now be up and running.
+<img width="1234" height="851" alt="image" src="https://github.com/user-attachments/assets/99eb2c7b-1811-4569-900a-e239db03df19" />
